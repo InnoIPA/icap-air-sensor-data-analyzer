@@ -24,7 +24,7 @@ iCAP Air Device Data Analyzer 是一個用於分析 iCAP Air 裝置資料的小�
 
 1. Clone 此儲存庫：
    ```bash
-   git clone https://github.com/yourusername/icap-air-sensor-data-analyzer.git
+   git clone https://github.com/InnoIPA/icap-air-sensor-data-analyzer.git
    ```
 2. 進入專案目錄：
    ```bash
@@ -32,7 +32,7 @@ iCAP Air Device Data Analyzer 是一個用於分析 iCAP Air 裝置資料的小�
    ```
 3. 建立虛擬環境並啟動
 
-   以下命令執行完成後，會看到終端機的路徑前方會出現`venv` 字樣
+   以下命令執行完成後，會看到終端機的路徑前方會出現`venv` 字樣，也有可能沒有，只要下方指令沒有錯誤訊息即可
 
    ```bash
    python -m venv venv
