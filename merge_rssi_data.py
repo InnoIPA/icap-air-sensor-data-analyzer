@@ -218,6 +218,7 @@ def main() -> int:
         with open(data_rssi_path) as f:
             data_json = json.load(f)
         data_rssi_df = process_rssi_data(data_json, "data")
+        logger.info(f"已讀取 dataRSSI {env_rssi_df.__len__()} 筆 ")
         # 以 Excel 內的時區進行轉換
         data_rssi_df["ts"] = data_rssi_df["ts"].dt.tz_convert(target_tz)
 
@@ -226,6 +227,7 @@ def main() -> int:
         with open(env_rssi_path) as f:
             env_json = json.load(f)
         env_rssi_df = process_rssi_data(env_json, "env")
+        logger.info(f"已讀取 dataRSSI {env_rssi_df.__len__()} 筆")
         # 以 Excel 內的時區進行轉換
         env_rssi_df["ts"] = data_rssi_df["ts"].dt.tz_convert(target_tz)
 
