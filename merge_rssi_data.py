@@ -69,7 +69,7 @@ def process_rssi_data(json_data: Dict[str, Any], rssi_type: str) -> pd.DataFrame
     rssi_data = [
         {
             "ts": pd.to_datetime(
-                item["ts"], unit="ms"
+                item["ts"], unit="ms", utc=True
             ),  # 轉換 Unix timestamp 為 datetime
             f"{rssi_type}_rssi (dBm)": float(item["value"]) * 255
             - 256,  # 轉換為 dBm 值
@@ -91,8 +91,9 @@ def process_dataframe(df: pd.DataFrame, time_col: str) -> pd.DataFrame:
     """
     df = df.dropna(subset=[time_col])  # 移除時間為空的記錄
     df[time_col] = pd.to_datetime(df[time_col])  # 轉換時間格式
-    df = df.sort_values(time_col)  # 按時間排序
-    return df
+    target_tz = df[time_col].dt.tz
+    df = df.sort_values(time_col)
+    return df, target_tz
 
 
 def is_valid_directory(path_str: str) -> bool:
@@ -210,19 +211,23 @@ def main() -> int:
             raise ValueError(f"找不到時間欄位: {config.time_col}")
 
         # 處理原始資料時間格式
-        df = process_dataframe(df, config.time_col)
+        df, target_tz = process_dataframe(df, config.time_col)
 
         # 讀取並處理 dataRSSI
         logger.info("讀取 dataRSSI 資料: %s", data_rssi_path)
         with open(data_rssi_path) as f:
             data_json = json.load(f)
         data_rssi_df = process_rssi_data(data_json, "data")
+        # 以 Excel 內的時區進行轉換
+        data_rssi_df["ts"] = data_rssi_df["ts"].dt.tz_convert(target_tz)
 
         # 讀取並處理 envRSSI
         logger.info("讀取 envRSSI 資料: %s", env_rssi_path)
         with open(env_rssi_path) as f:
             env_json = json.load(f)
         env_rssi_df = process_rssi_data(env_json, "env")
+        # 以 Excel 內的時區進行轉換
+        env_rssi_df["ts"] = data_rssi_df["ts"].dt.tz_convert(target_tz)
 
         # 合併所有資料
         logger.info("合併資料...")
